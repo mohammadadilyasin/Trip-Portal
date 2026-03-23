@@ -10,7 +10,7 @@
     <link rel="icon" type="image/png" href="icon.png">
     <meta charset="UTF-8">
     <title>Pakistan Trip Portal</title>
-    <style>
+     <style>
         :root { --river-blue: #2c5f78; --nature-green: #4a7c59; --water-light: #e0f2f1; --forest: #1b3022; --accent: #f39c12; }
         body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%); margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
         .container { width: 95%; max-width: 1100px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; }
@@ -25,7 +25,6 @@
         .admin-btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; transition: 0.3s; display: inline-block; }
         .interactive-card { background: #f9f9f9; padding: 20px; border-radius: 15px; margin-top: 15px; border: 1px solid #ddd; text-align: center;}
         input[type="text"] { padding: 12px; border-radius: 6px; border: 1px solid #ccc; width: 85%; box-sizing: border-box; font-size: 14px; margin-bottom: 5px; }
-        
         #map-display-area {
             width: 100%; height: 200px; background: #cbd5e0; border-radius: 12px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -39,10 +38,53 @@
         #loading { display:none; color: var(--river-blue); font-weight: bold; margin-bottom: 10px;}
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @media (max-width: 800px) { .menu-grid { grid-template-columns: repeat(2, 1fr); } }
+
     </style>
+   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pakistan Trip Portal</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon.png?v=2">
+    <link rel="icon" type="image/png" href="icon.png?v=2">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #2c5f78; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        #splash-screen img { width: 150px; border-radius: 50%; border: 4px solid white; }
+        #splash-screen h2 { color: white; margin-top: 20px; font-family: 'Segoe UI', sans-serif; }
+    </style>
+
+    <style>
+        :root { --river-blue: #2c5f78; --nature-green: #4a7c59; ... }
+        body { font-family: 'Segoe UI', sans-serif; ... }
+        /* ... ALL YOUR OTHER CSS GOES HERE ... */
+    </style>
+</head>
 </head>
 <body>
 
+    <div id="splash-screen">
+    <img src="icon.png" alt="Logo">
+    <h2>Loading Trip Portal...</h2>
+</div>
+
+<script>
+    // This hides the splash screen after 2 seconds
+    window.onload = () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => splash.remove(), 500);
+        }, 2000);
+    };
+</script>
 <div class="container">
     <div id="landing-page">
         <h1 style="color: var(--river-blue);">Pakistan Trip Portal</h1>
