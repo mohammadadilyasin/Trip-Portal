@@ -1,26 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#2c5f78">
-    <link rel="apple-touch-icon" href="icon.png">
-    <link rel="icon" type="image/png" href="icon.png">
-    <meta charset="UTF-8">
-    <title>Pakistan Trip Portal</title>
-   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Pakistan Trip Portal</title>
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2c5f78">
+
     <link rel="apple-touch-icon" href="icon.png?v=2">
     <link rel="icon" type="image/png" href="icon.png?v=2">
     <link rel="manifest" href="manifest.json">
+
     <style>
+        /* 1. SPLASH SCREEN STYLE */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #2c5f78; display: flex; flex-direction: column;
@@ -29,14 +24,20 @@
         }
         #splash-screen img { width: 150px; border-radius: 50%; border: 4px solid white; }
         #splash-screen h2 { color: white; margin-top: 20px; font-family: 'Segoe UI', sans-serif; }
-    </style>
 
-    <style>
-        :root { --river-blue: #2c5f78; --nature-green: #4a7c59; ... }
-        body { font-family: 'Segoe UI', sans-serif; ... }
-         <style>
-        :root { --river-blue: #2c5f78; --nature-green: #4a7c59; --water-light: #e0f2f1; --forest: #1b3022; --accent: #f39c12; }
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%); margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        /* 2. MAIN APP STYLE */
+        :root { 
+            --river-blue: #2c5f78; 
+            --nature-green: #4a7c59; 
+            --water-light: #e0f2f1; 
+            --forest: #1b3022; 
+            --accent: #f39c12; 
+        }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%); 
+            margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; 
+        }
         .container { width: 95%; max-width: 1100px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; }
         .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
         .nav-card { padding: 18px 5px; background: var(--river-blue); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 0.8em; width: 100%; }
@@ -49,12 +50,7 @@
         .admin-btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; transition: 0.3s; display: inline-block; }
         .interactive-card { background: #f9f9f9; padding: 20px; border-radius: 15px; margin-top: 15px; border: 1px solid #ddd; text-align: center;}
         input[type="text"] { padding: 12px; border-radius: 6px; border: 1px solid #ccc; width: 85%; box-sizing: border-box; font-size: 14px; margin-bottom: 5px; }
-        #map-display-area {
-            width: 100%; height: 200px; background: #cbd5e0; border-radius: 12px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            margin-bottom: 10px; background-size: cover; background-position: center; border: 1px solid #ddd;
-        }
-
+        
         .img-container { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-start; margin-bottom: 5px; }
         .upload-btn { background: var(--accent); color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75em; flex: 1; }
         .clear-btn { background: #e74c3c; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75em; flex: 1; }
@@ -62,33 +58,21 @@
         #loading { display:none; color: var(--river-blue); font-weight: bold; margin-bottom: 10px;}
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @media (max-width: 800px) { .menu-grid { grid-template-columns: repeat(2, 1fr); } }
-
     </style>
-    </style>
-</head>
 </head>
 <body>
 
-    <div id="splash-screen">
+<div id="splash-screen">
     <img src="icon.png" alt="Logo">
     <h2>Loading Trip Portal...</h2>
 </div>
 
-<script>
-    // This hides the splash screen after 2 seconds
-    window.onload = () => {
-        setTimeout(() => {
-            const splash = document.getElementById('splash-screen');
-            splash.style.opacity = '0';
-            setTimeout(() => splash.remove(), 500);
-        }, 2000);
-    };
-</script>
 <div class="container">
     <div id="landing-page">
         <h1 style="color: var(--river-blue);">Pakistan Trip Portal</h1>
         <p id="admin-status" onclick="askPassword()" style="cursor:pointer; color: #777;">🔒 Click to Unlock Edits</p>
         <div id="loading">📡 Syncing...</div>
+        
         <div class="menu-grid">
             <button class="nav-card" onclick="showSection('itinerary')">📅 ITINERARY</button>
             <button class="nav-card" onclick="showSection('spending')">💵 SPENDING LOG</button>
@@ -141,23 +125,12 @@
         <div id="maps-view" style="display:none;">
             <div class="interactive-card">
                 <p id="map-msg">📍 Live Google Map</p>
-                <iframe 
-                    id="live-google-map"
-                    width="100%" 
-                    height="300" 
-                    style="border:0; border-radius:12px; display:none;" 
-                    allowfullscreen="" 
-                    loading="lazy" 
-                    referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
-                
+                <iframe id="live-google-map" width="100%" height="300" style="border:0; border-radius:12px; display:none;" allowfullscreen="" loading="lazy"></iframe>
                 <div id="map-placeholder" style="height:200px; background:#eee; display:flex; align-items:center; justify-content:center; border-radius:12px; color:#666;">
                     Waiting for GPS Signal...
                 </div>
-
                 <button class="admin-btn" style="background:var(--river-blue); margin-top: 10px;" onclick="updateMapToCurrentLocation()">🔄 Update My Location</button>
             </div>
-            
             <div class="interactive-card">
                 <h3>🚗 Get Directions</h3>
                 <input type="text" id="map-start" placeholder="Starting Point (Leave blank for GPS)">
@@ -189,7 +162,18 @@
         budget: ["Category", "Item", "Cost", "Notes"]
     };
 
-    window.onload = loadFromCloud;
+    // This handles Splash Screen AND Cloud Loading
+    window.onload = async () => {
+        // Start Loading Data
+        await loadFromCloud();
+        
+        // Hide Splash Screen after 2 seconds
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => splash.remove(), 500);
+        }, 2000);
+    };
 
     async function loadFromCloud() {
         try {
@@ -235,16 +219,15 @@
         document.getElementById('maps-view').style.display = (sec === 'maps' ? 'block' : 'none');
         document.getElementById('controls').style.display = (isAdmin && !isSpec) ? 'flex' : 'none';
 
-       if(!isSpec) {
-    let displayTitle = sec.replace('-', ' ').toUpperCase();
-    if (sec === 'spending') { displayTitle = "SPENDING LOG"; }
-    // ADD THE LINE BELOW:
-    if (sec === 'hotels') { displayTitle = "HOTELS / GUESTHOUSES"; } 
-    
-    document.getElementById('section-title').innerText = displayTitle;
-    document.getElementById('t-head').innerHTML = setup[sec].map(h => `<th>${h}</th>`).join('');
-    renderTable();
-}
+        if(!isSpec) {
+            let displayTitle = sec.replace('-', ' ').toUpperCase();
+            if (sec === 'spending') { displayTitle = "SPENDING LOG"; }
+            if (sec === 'hotels') { displayTitle = "HOTELS / GUESTHOUSES"; } 
+            
+            document.getElementById('section-title').innerText = displayTitle;
+            document.getElementById('t-head').innerHTML = setup[sec].map(h => `<th>${h}</th>`).join('');
+            renderTable();
+        }
     }
     
     function renderTable() {
@@ -332,7 +315,7 @@
             navigator.geolocation.getCurrentPosition(p => {
                 const { latitude, longitude } = p.coords;
                 msg.innerText = `📍 Viewing: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-                const embedUrl = `https://maps.google.com/maps?q=${latitude},${longitude}&z=15&output=embed`;
+                const embedUrl = `https://www.google.com/maps?q=${latitude},${longitude}&z=15&output=embed`;
                 iframe.src = embedUrl;
                 iframe.style.display = "block";
                 placeholder.style.display = "none";
@@ -368,10 +351,13 @@
     }
 
     function askPassword() {
-        const pw = prompt("Enter Admin Password:");{
+        const pw = prompt("Enter Admin Password:");
+        if (pw === MASTER_PW) {
             isAdmin = true;
             document.getElementById('admin-status').innerText = "🔓 Admin Mode Active";
             if(currentSection) showSection(currentSection);
+        } else {
+            alert("Wrong password!");
         }
     }
 
@@ -414,6 +400,5 @@
         });
     }
 </script>
-
 </body>
 </html>
