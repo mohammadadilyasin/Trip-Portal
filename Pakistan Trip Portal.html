@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2c5f78">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/192">
+    <meta charset="UTF-8">
+    <title>Pakistan Trip Portal</title>
+    <style>
+        :root { --river-blue: #2c5f78; --nature-green: #4a7c59; --water-light: #e0f2f1; --forest: #1b3022; --accent: #f39c12; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%); margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .container { width: 95%; max-width: 1100px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; }
+        .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
+        .nav-card { padding: 18px 5px; background: var(--river-blue); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 0.8em; width: 100%; }
+        .nav-card:hover { background: var(--nature-green); transform: translateY(-3px); }
+        #content-view { display: none; text-align: left; animation: fadeIn 0.4s; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; table-layout: fixed; margin-bottom: 20px;}
+        th { background: var(--river-blue); color: white; padding: 12px; text-align: left; font-size: 0.8em; }
+        td { border: 1px solid #ddd; padding: 10px; outline: none; word-wrap: break-word; vertical-align: middle; font-size: 0.9em;}
+        .admin-controls { display: none; margin-bottom: 20px; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .admin-btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; transition: 0.3s; display: inline-block; }
+        .interactive-card { background: #f9f9f9; padding: 20px; border-radius: 15px; margin-top: 15px; border: 1px solid #ddd; text-align: center;}
+        input[type="text"] { padding: 12px; border-radius: 6px; border: 1px solid #ccc; width: 85%; box-sizing: border-box; font-size: 14px; margin-bottom: 5px; }
+        
+        #map-display-area {
+            width: 100%; height: 200px; background: #cbd5e0; border-radius: 12px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            margin-bottom: 10px; background-size: cover; background-position: center; border: 1px solid #ddd;
+        }
+
+        .img-container { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-start; margin-bottom: 5px; }
+        .upload-btn { background: var(--accent); color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75em; flex: 1; }
+        .clear-btn { background: #e74c3c; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75em; flex: 1; }
+        .img-preview { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 1px solid #ccc; }
+        #loading { display:none; color: var(--river-blue); font-weight: bold; margin-bottom: 10px;}
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @media (max-width: 800px) { .menu-grid { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="landing-page">
+        <h1 style="color: var(--river-blue);">Pakistan Trip Portal</h1>
+        <p id="admin-status" onclick="askPassword()" style="cursor:pointer; color: #777;">🔒 Click to Unlock Edits</p>
+        <div id="loading">📡 Syncing...</div>
+        <div class="menu-grid">
+            <button class="nav-card" onclick="showSection('itinerary')">📅 ITINERARY</button>
+            <button class="nav-card" onclick="showSection('spending')">💵 SPENDING LOG</button>
+            <button class="nav-card" onclick="openSubMenu('people')">👥 PEOPLE</button>
+            <button class="nav-card" onclick="showSection('budget')">💰 BUDGET</button>
+        </div>
+        <div class="menu-grid">
+            <button class="nav-card" onclick="openSubMenu('travel')">✈️ TRAVEL</button>
+            <button class="nav-card" onclick="showSection('hotels')">🏨 HOTEL / GUESTHOUSE</button>
+            <button class="nav-card" onclick="showSection('food')">🍲 FOOD</button>
+            <button class="nav-card" onclick="showSection('contacts')">📞 CONTACTS</button>
+        </div>
+        <div class="menu-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <button class="nav-card" onclick="showSection('maps')">📍 MAPS</button>
+            <button class="nav-card" onclick="showSection('weather')">🌤️ WEATHER</button>
+        </div>
+    </div>
+
+    <div id="content-view">
+        <div class="admin-controls" id="controls">
+            <button class="admin-btn" style="background:var(--nature-green)" onclick="addRow()">➕ Add Row</button>
+            <button class="admin-btn" style="background:var(--river-blue)" onclick="syncToCloud()">☁️ Save to Cloud</button>
+            <button class="admin-btn" style="background:#e74c3c" onclick="lockEdits()">🔒 Lock</button>
+        </div>
+        <button class="admin-btn" style="background:var(--forest);" onclick="goBack()">← Back</button>
+
+        <div id="sub-choice-view" style="display:none;" class="interactive-card">
+            <h2 id="sub-heading" style="color: var(--river-blue);">Select Option</h2>
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                <button id="sub-btn-1" class="nav-card" style="max-width: 200px;"></button>
+                <button id="sub-btn-2" class="nav-card" style="max-width: 200px;"></button>
+            </div>
+        </div>
+
+        <div id="standard-table-view">
+            <h2 id="section-title" style="color: var(--river-blue); margin-top: 15px;"></h2>
+            <table id="main-table">
+                <thead><tr id="t-head"></tr></thead>
+                <tbody id="t-body"></tbody>
+            </table>
+        </div>
+
+        <div id="weather-view" style="display:none;" class="interactive-card">
+            <h3>🌤️ Weather Search</h3>
+            <input type="text" id="city-input" placeholder="Enter City Name">
+            <button class="admin-btn" style="background:var(--river-blue); margin-top:10px;" onclick="getWeather()">Check Weather</button>
+            <div id="weather-output" style="margin-top: 20px; font-weight: bold; font-size: 1.2em;"></div>
+        </div>
+
+        <div id="maps-view" style="display:none;">
+            <div class="interactive-card">
+                <p id="map-msg">📍 Live Google Map</p>
+                <iframe 
+                    id="live-google-map"
+                    width="100%" 
+                    height="300" 
+                    style="border:0; border-radius:12px; display:none;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+                
+                <div id="map-placeholder" style="height:200px; background:#eee; display:flex; align-items:center; justify-content:center; border-radius:12px; color:#666;">
+                    Waiting for GPS Signal...
+                </div>
+
+                <button class="admin-btn" style="background:var(--river-blue); margin-top: 10px;" onclick="updateMapToCurrentLocation()">🔄 Update My Location</button>
+            </div>
+            
+            <div class="interactive-card">
+                <h3>🚗 Get Directions</h3>
+                <input type="text" id="map-start" placeholder="Starting Point (Leave blank for GPS)">
+                <input type="text" id="map-to" placeholder="Destination (e.g. Dolmen Mall)">
+                <button class="admin-btn" style="background:var(--nature-green); width: 85%;" onclick="launchDirections()">View Route</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="file" id="multi-upload" style="display:none" accept="image/*" multiple="">
+
+<script>
+    const BIN_ID = '69ae7d11ae596e708f6f98c4';
+    const API_KEY = '$2a$10$3CYtJ3R3MUhyaDSSbAIRaeUh5bsTcbTBnsk3/S4TnWg84ArIblI/a';
+    const MASTER_PW = "Pakistan";
+    let isAdmin = false, currentSection = '', globalData = {};
+
+    const setup = {
+        itinerary: ["Day", "Location", "Activity", "Remarks"],
+        spending: ["Category", "Amount Paid", "Amount Paid By", "Remarks"],
+        'people-adults': ["Name", "Contact", "Notes", "Amount Per Person"],
+        'people-children': ["Name", "Contact", "Notes", "Amount Per Person"],
+        'travel-incity': ["City", "Transport Mode", "Details"],
+        'travel-intercity': ["Route", "Transport Mode", "Details", "Cost Per Person", "Cost Overall", "Upload Ticket"],
+        hotels : ["City", "Accommodation Name", "Status", "Confirmation/Proof of Payment", "Remarks"],
+        food: ["Restaurant", "Amount", "Amount Paid By", "Upload Receipt", "Remarks"],
+        contacts: ["Name", "Contact", "Who is this?"],
+        budget: ["Category", "Item", "Cost", "Notes"]
+    };
+
+    window.onload = loadFromCloud;
+
+    async function loadFromCloud() {
+        try {
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { 'X-Master-Key': API_KEY } });
+            const result = await res.json();
+            globalData = result.record || {};
+        } catch (err) { console.error("Load failed"); }
+    }
+
+    function openSubMenu(type) {
+        document.getElementById('controls').style.display = 'none';
+        document.getElementById('landing-page').style.display = 'none';
+        document.getElementById('content-view').style.display = 'block';
+        document.getElementById('sub-choice-view').style.display = 'block';
+        document.getElementById('standard-table-view').style.display = 'none';
+        document.getElementById('weather-view').style.display = 'none';
+        document.getElementById('maps-view').style.display = 'none';
+        
+        const b1 = document.getElementById('sub-btn-1');
+        const b2 = document.getElementById('sub-btn-2');
+        const head = document.getElementById('sub-heading');
+
+        if(type === 'travel') {
+            head.innerText = "✈️ TRAVEL";
+            b1.innerText = "🏙️ In-City"; b1.onclick = () => showSection('travel-incity');
+            b2.innerText = "🛣️ Inter-City"; b2.onclick = () => showSection('travel-intercity');
+        } else {
+            head.innerText = "👥 PEOPLE";
+            b1.innerText = "👨 Adults"; b1.onclick = () => showSection('people-adults');
+            b2.innerText = "🧒 Children"; b2.onclick = () => showSection('people-children');
+        }
+    }
+
+    function showSection(sec) {
+        currentSection = sec;
+        document.getElementById('landing-page').style.display = 'none';
+        document.getElementById('content-view').style.display = 'block';
+        document.getElementById('sub-choice-view').style.display = 'none';
+        
+        const isSpec = ['weather', 'maps'].includes(sec);
+        document.getElementById('standard-table-view').style.display = isSpec ? 'none' : 'block';
+        document.getElementById('weather-view').style.display = (sec === 'weather' ? 'block' : 'none');
+        document.getElementById('maps-view').style.display = (sec === 'maps' ? 'block' : 'none');
+        document.getElementById('controls').style.display = (isAdmin && !isSpec) ? 'flex' : 'none';
+
+       if(!isSpec) {
+    let displayTitle = sec.replace('-', ' ').toUpperCase();
+    if (sec === 'spending') { displayTitle = "SPENDING LOG"; }
+    // ADD THE LINE BELOW:
+    if (sec === 'hotels') { displayTitle = "HOTELS / GUESTHOUSES"; } 
+    
+    document.getElementById('section-title').innerText = displayTitle;
+    document.getElementById('t-head').innerHTML = setup[sec].map(h => `<th>${h}</th>`).join('');
+    renderTable();
+}
+    }
+    
+    function renderTable() {
+        const body = document.getElementById('t-body');
+        body.innerHTML = "";
+        const saved = globalData[currentSection] || [];
+        saved.forEach((rowData, rIdx) => {
+            const row = body.insertRow();
+            rowData.forEach((val, cIdx) => {
+                const cell = row.insertCell(cIdx);
+                const colName = setup[currentSection][cIdx];
+                if (colName.includes("Upload") || colName.includes("Confirmation")) {
+                    cell.setAttribute('data-img', val || "");
+                    refreshMediaCell(cell, val);
+                } else {
+                    cell.contentEditable = isAdmin;
+                    cell.innerText = val || "-";
+                }
+            });
+        });
+    }
+
+    function refreshMediaCell(cell, imgData) {
+        cell.innerHTML = "";
+        let container = document.createElement('div');
+        container.className = 'img-container';
+        if (imgData && imgData.includes("data:image")) {
+            imgData.split('|').forEach(src => {
+                const img = document.createElement('img');
+                img.src = src; img.className = 'img-preview';
+                img.onclick = () => window.open(src);
+                container.appendChild(img);
+            });
+        }
+        cell.appendChild(container);
+        if (isAdmin) {
+            const btnWrap = document.createElement('div');
+            btnWrap.style.display = "flex";
+            btnWrap.style.gap = "4px";
+
+            const btn = document.createElement('button');
+            btn.className = 'upload-btn'; btn.innerText = "➕ Add Files";
+            btn.onclick = () => triggerMultiUpload(cell);
+            
+            const clr = document.createElement('button');
+            clr.className = 'clear-btn'; clr.innerText = "🗑️ Delete All";
+            clr.onclick = () => {
+                if(confirm("Are you sure you want to delete all images in this cell?")) {
+                    cell.setAttribute('data-img', "");
+                    refreshMediaCell(cell, "");
+                }
+            };
+
+            btnWrap.appendChild(btn);
+            btnWrap.appendChild(clr);
+            cell.appendChild(btnWrap);
+        }
+    }
+
+    function triggerMultiUpload(cell) {
+        const input = document.getElementById('multi-upload');
+        input.onchange = async e => {
+            const files = Array.from(e.target.files);
+            const promises = files.map(f => new Promise(res => {
+                const reader = new FileReader();
+                reader.onload = () => res(reader.result);
+                reader.readAsDataURL(f);
+            }));
+            const results = await Promise.all(promises);
+            const existing = cell.getAttribute('data-img') || "";
+            const finalData = (existing ? existing.split('|') : []).concat(results).join('|');
+            cell.setAttribute('data-img', finalData);
+            refreshMediaCell(cell, finalData);
+        };
+        input.click();
+    }
+
+    function updateMapToCurrentLocation() {
+        const msg = document.getElementById('map-msg');
+        const iframe = document.getElementById('live-google-map');
+        const placeholder = document.getElementById('map-placeholder');
+
+        if (navigator.geolocation) {
+            msg.innerText = "📡 Fetching GPS...";
+            navigator.geolocation.getCurrentPosition(p => {
+                const { latitude, longitude } = p.coords;
+                msg.innerText = `📍 Viewing: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+                const embedUrl = `https://maps.google.com/maps?q=${latitude},${longitude}&z=15&output=embed`;
+                iframe.src = embedUrl;
+                iframe.style.display = "block";
+                placeholder.style.display = "none";
+            }, () => {
+                msg.innerText = "❌ GPS Error: Check Permissions";
+                alert("Please allow location access.");
+            });
+        }
+    }
+
+    function launchDirections() {
+        const start = document.getElementById('map-start').value.trim();
+        const dest = document.getElementById('map-to').value.trim();
+        if (!dest) { alert("Please enter a destination first."); return; }
+        const origin = start ? `&saddr=${encodeURIComponent(start)}` : "";
+        const url = `https://www.google.com/maps?daddr=${encodeURIComponent(dest)}${origin}`;
+        window.open(url, '_blank');
+    }
+
+    async function getWeather() {
+        const city = document.getElementById('city-input').value;
+        const out = document.getElementById('weather-output');
+        try {
+            const geo = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`);
+            const gData = await geo.json();
+            if(gData.results) {
+                const { latitude, longitude, name } = gData.results[0];
+                const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+                const wData = await w.json();
+                out.innerText = `${name}: ${wData.current_weather.temperature}°C`;
+            } else { out.innerText = "City not found."; }
+        } catch(e) { out.innerText = "Weather error."; }
+    }
+
+    function askPassword() {
+        const pw = prompt("Enter Admin Password:");{
+            isAdmin = true;
+            document.getElementById('admin-status').innerText = "🔓 Admin Mode Active";
+            if(currentSection) showSection(currentSection);
+        }
+    }
+
+    function goBack() {
+        document.getElementById('landing-page').style.display = 'block';
+        document.getElementById('content-view').style.display = 'none';
+    }
+
+    function lockEdits() { 
+        isAdmin = false; 
+        document.getElementById('admin-status').innerText = "🔒 Click to Unlock Edits";
+        goBack(); 
+    }
+
+    async function syncToCloud() {
+        if (!isAdmin) return;
+        const rows = Array.from(document.getElementById('t-body').rows).map(r =>
+            Array.from(r.cells).map(cell => cell.getAttribute('data-img') || cell.innerText)
+        );
+        globalData[currentSection] = rows;
+        try {
+            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(globalData)
+            });
+            alert("Saved!");
+        } catch(e) { alert("Save failed."); }
+    }
+
+    function addRow() {
+        const row = document.getElementById('t-body').insertRow();
+        setup[currentSection].forEach((h, i) => {
+            const cell = row.insertCell(i);
+            if (h.includes("Upload") || h.includes("Confirmation")) {
+                refreshMediaCell(cell, "");
+            } else {
+                cell.contentEditable = "true"; cell.innerText = "-";
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
